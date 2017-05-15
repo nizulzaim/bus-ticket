@@ -9,7 +9,7 @@ Trip.extend({
             const doc = e.currentTarget;
             let allTransaction = [];
 
-            Transaction.find({status: 3}).forEach((item) => {
+            Transaction.find({tripId: doc._id, status: 3}).forEach((item) => {
                 allTransaction.push(item._id);
             });
 

@@ -8,7 +8,7 @@
                             <raised-button class="primary"><icon name="plus"></icon> Add Schedule</raised-button>
                         </router-link>
                     </div>
-                    <data-table class="sortable" v-if="trips.length">
+                    <data-table class="sortable" v-if="trips.count() && locations.count()">
                         <table>
                             <thead>
                                 <tr>
@@ -64,7 +64,7 @@
                                 </tr>
                             </thead>
                             <tbody v-if="selectedTrip">
-                                <tr v-for="(price, index) in selectedTrip.price ">
+                                <tr v-for="(price, index) in selectedTrip.price">
                                     <td></td>
                                     <td>{{getLocation(price.arrivalLocation).name }}</td>
                                     <td>RM {{price.adult }}</td>
@@ -87,8 +87,8 @@
                 </data-table>
             </div>
         </reveal>
-        <reveal id="hello" v-model="showEditPrice" v-if="loginUser && loginUser.isAdmin()">
-            <div class="col-md-fluid-10">
+        <reveal id="hello" v-model="showEditPrice" >
+            <div class="col-md-fluid-10" v-if="loginUser && loginUser.isAdmin()">
                 <cards>
                     <form @submit.prevent="editPriceSubmit">
                         <cards-content-scrollbar>
@@ -142,6 +142,7 @@
                 "loginUser": [],
             },
             trips() {
+                if (Trip.find()) console.log(Trip.find().count());
                 return Trip.find();
             },
             locations() {

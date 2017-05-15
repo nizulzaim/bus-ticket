@@ -87,7 +87,7 @@
                     minute: "",
                     price: [],
                 },
-                possibleDMonth: ["January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"],
+                possibleDMonth: ["January", "February", "March", "April",'May', "June", "July", "August", "September", "October", "November", "December"],
                 possibleDYear: [2017, 2018],
                 possibleDDay: [],
                 possibleHour: ["07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
@@ -129,7 +129,16 @@
             },
             addTrip() {
                 let trip = new Trip();
-                console.log("hello");
+                let hasError = false;
+                this.trip.price.forEach(item => {
+                    if (item.adult === "" || item.children === "" || item.arrivalLocation === "") {
+                        hasError = true;
+                    }
+                })
+
+                if (hasError) {
+                    return this.$snackbar.run("Please enter value for each arrival/destination locations", () => {}, "OK", "error");
+                }
                 trip.callMethod("create", this.trip, (err, result) => {
                     if (err) {
                         return this.$snackbar.run(err, () => {}, "OK", "error");
