@@ -2,6 +2,7 @@ import { Class } from 'meteor/jagi:astronomy';
 import {Meteor} from "meteor/meteor";
 import {Trip} from '/imports/model/Trip.js';
 import {TransactionItem} from '/imports/model/TransactionItem.js';
+import {User} from '/imports/model/User.js';
 
 export const Transaction = Class.create({
     name: "Transaction",
@@ -19,8 +20,18 @@ export const Transaction = Class.create({
             let t = Trip.findOne(this.tripId);
             return t;
         },
+        user() {
+            return User.findOne(this.owner);
+        },
         transactionItems() {
             return TransactionItem.find({transactionId: this._id});
+        },
+        statusString() {
+            if (this.status === 0) return "Available";
+            if (this.status === 1) return "Locked";
+            if (this.status === 2) return "Pending Payment";
+            if (this.status === 3) return "Paid";
+            if (this.status === 4) return "Used";
         }
     },
     behaviors: {

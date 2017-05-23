@@ -27,7 +27,7 @@ export const UserProfile = Class.create({
         nationality: Number,
         email: String,
         counter: {
-            type: Number,
+            type: String,
             optional: true,
         },
         userType: {

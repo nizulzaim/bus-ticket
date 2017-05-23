@@ -103,7 +103,46 @@
                 </cards>
             </div>
         </reveal>
-    
+        <reveal v-model="paymentModal">
+            <div class="col-md-fluid-10" v-if="paymentModal">
+                <cards>
+                    <cards-content>
+                        <div class="row has-gutter">
+                            <div class="col-xs-fluid-24">
+                                <textfield v-model="payment.cardsNumber" placeholder="Cards Number"></textfield>
+                            </div>
+                            <div class="col-xs-fluid-24">
+                                <textfield v-model="payment.name" placeholder="Name on Cards"></textfield>
+                            </div>
+                            <div class="col-xs-fluid-6">
+                                <textfield v-model="payment.cvv" placeholder="CVV"></textfield>
+                            </div>
+                            <div class="col-xs-fluid-6">
+                                <dropdown-select v-model="payment.month" label="Month">
+                                    <menu-option v-for="(m, index) in month" :value="index">{{m}}</menu-option>
+                                </dropdown-select>
+                            </div>
+                            <div class="col-xs-fluid-6">
+                                <dropdown-select v-model="payment.year" label="Year">
+                                    <menu-option v-for="(m, index) in year" :value="index">{{m}}</menu-option>
+                                </dropdown-select>
+                            </div>
+                            <!--<div class="col-xs-fluid-6">
+                                <dropdown-select v-model="payment.year" label="Year">
+                                    <menu-option v-for="m in year" :key="m" :value="m">{{m}}</menu-option>
+                                </dropdown-select>
+                            </div>-->
+                        </div>
+                    </cards-content>
+                    <cards-action class="cards-content">
+                        <div class="pull-right">
+                            <flat-button @click="paymentModal=false" class="primary" v-ripple>Back</flat-button>
+                            <color-button @click="confirmAfterConfirm" class="primary" v-ripple>Confirm</color-button>
+                        </div>
+                    </cards-action>
+                </cards>
+            </div>
+        </reveal>
     </div>
 </template>
 
@@ -118,6 +157,16 @@
                 row: [],
                 selectedSeat: [],
                 showDialog: false,
+                paymentModal: false,
+                payment: {
+                    cardsNumber: "",
+                    name: "",
+                    cvv: "",
+                    month: "",
+                    year: "",
+                },
+                month: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
+                year: ["17", "18", "19", "20", "21", "22", "23", "24"]
             }
         },
         mounted() {
@@ -156,6 +205,27 @@
             }
         },
         methods: {
+            validateCardNumber(number) {
+                var regex = new RegExp("^[0-9]{16}$");
+                if (!regex.test(number))
+                    return false;
+
+                return this.luhnCheck(number);
+            },
+            luhnCheck(val) {
+                var sum = 0;
+                for (var i = 0; i < val.length; i++) {
+                    var intVal = parseInt(val.substr(i, 1));
+                    if (i % 2 == 0) {
+                        intVal *= 2;
+                        if (intVal > 9) {
+                            intVal = 1 + (intVal % 10);
+                        }
+                    }
+                    sum += intVal;
+                }
+                return (sum % 10) == 0;
+            },
             selectSeat(r,c) {
                 event.srcElement.classList.toggle("selected");
 
@@ -180,14 +250,42 @@
             confirmPayment() {
                 this.showDialog = false;
                 this.$confirmation.run("Are you sure want to proceed to payment", ()=>{
-                    this.$transaction.callMethod("createOrUpdate", this.$route.params.id, this.$route.query.arrival, this.totalPrice, this.selectedSeat, (err, result) => {
-                        if (err) {
-                            return this.$snackbar.run(err.reason, () => {}, "OK", "error");
-                        }
-                        this.$snackbar.run("Payment Complete");
-                        return this.$router.push("/dashboard/active-tickets");
-                    });
+                    this.paymentModal = true;
+                    
                 });
+            },
+            confirmAfterConfirm() {
+                let next = true;
+
+                Object.getOwnPropertyNames(this.payment).forEach(item => {
+                    if (this.payment[item] === "") {
+                        next = false;
+                    }
+                })
+
+                if (!this.validateCardNumber(this.payment.cardsNumber)) {
+                    return this.$snackbar.run("Failed to validate card", ()=>{}, "Ok", "error");
+                }
+
+                if (this.payment.cvv.length !== 3) {
+                    return this.$snackbar.run("Failed to validate CVV number", ()=>{}, "Ok", "error");
+                }
+
+                if (!next) {
+                    return this.$snackbar.run("Please complete input", ()=>{}, "Ok", "error");
+                }
+
+                this.$transaction.callMethod("createOrUpdate", this.$route.params.id, this.$route.query.arrival, this.totalPrice, this.selectedSeat, (err, result) => {
+                    if (err) {
+                        return this.$snackbar.run(err.reason, () => {}, "OK", "error");
+                    }
+
+                    this.paymentModal = false;
+                    this.$snackbar.run("Payment Complete");
+                    return this.$router.replace("/dashboard/active-tickets");
+                });
+
+                
             }
         },
         meteor: {

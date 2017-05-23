@@ -8,7 +8,7 @@
                             <raised-button class="primary"><icon name="plus"></icon> Add Schedule</raised-button>
                         </router-link>
                     </div>
-                    <data-table class="sortable" v-if="trips.count() && locations.count()">
+                    <data-table class="sortable" v-if="loginUser && trips.count() && locations.count()">
                         <table>
                             <thead>
                                 <tr>
@@ -22,7 +22,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="trip in trips">
+                                <tr v-for="trip in trips" v-if="(loginUser.profile.counter && trip.departLocation === loginUser.profile.counter) || !loginUser.profile.counter">
                                     <td></td>
                                     <td>{{trip.departTime | moment("dddd, Do MMMM YYYY, HH:mm")}}</td>
                                     <td v-text="getLocation(trip.departLocation).name"></td>
@@ -34,7 +34,7 @@
                                             <icon-button @click="showArrivalPlacesModal(trip._id)" name="bus" v-ripple trigger-tooltip class="color-green-900"></icon-button>
                                         </tooltip>
                                         <tooltip text="View Tickets">
-                                            <icon-button  name="ticket-confirmation" v-ripple trigger-tooltip class="color-primary-900"></icon-button>
+                                            <icon-button  @click="showTicketsListModal(trip._id)" name="ticket-confirmation" v-ripple trigger-tooltip class="color-primary-900"></icon-button>
                                         </tooltip>
                                     </td>
                                 </tr>
@@ -49,7 +49,7 @@
                 </div>
             </div>
         </page-container>
-        <reveal id="hello" v-model="showArrivalPlaces">
+        <reveal v-model="showArrivalPlaces">
             <div class="col-md-fluid-10">
                 <data-table class="sortable">
                     <scroll-bar>
@@ -87,7 +87,7 @@
                 </data-table>
             </div>
         </reveal>
-        <reveal id="hello" v-model="showEditPrice" >
+        <reveal  v-model="showEditPrice" >
             <div class="col-md-fluid-10" v-if="loginUser && loginUser.isAdmin()">
                 <cards>
                     <form @submit.prevent="editPriceSubmit">
@@ -109,6 +109,40 @@
                 </cards>
             </div>
         </reveal>
+        <reveal  v-model="showTicketsList" >
+            <div class="col-md-fluid-10" v-if="loginUser">
+                <data-table class="sortable">
+                    <scroll-bar>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="unsortable">ID</th>
+                                    <th class="">Seat</th>
+                                    <th>Username</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="selectedTrip">
+                                <tr v-for="(t, index) in transactionsItem">
+                                    <td></td>
+                                    <td>{{t.seat}}</td>
+                                    <td v-if="t.transaction() && t.transaction().user()">{{t.transaction().user().username}}</td>
+                                    <td>{{t.typeString()}}</td>
+                                    <td v-if="t.transaction()">{{t.transaction().statusString()}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </scroll-bar>
+                    <divider></divider>
+                    <cards-action>
+                        <div class="pull-right">
+                            <flat-button v-ripple class="primary" @click="showTicketsList = false">OK</flat-button>
+                        </div>
+                    </cards-action>
+                </data-table>
+            </div>
+        </reveal>
     </div>
 </template>
 
@@ -122,10 +156,17 @@
     import {
         User
     } from "/imports/model/User.js";
+    import {
+        Transaction
+    } from "/imports/model/Transaction.js";
+    import {
+        TransactionItem
+    } from "/imports/model/TransactionItem.js";
     export default {
         data() {
             return {
                 showArrivalPlaces: false,
+                showTicketsList: false,
                 showEditPrice: false,
                 selectedTrip: null,
                 price: {
@@ -140,6 +181,13 @@
                 "trips": [],
                 "locations": [],
                 "loginUser": [],
+                transactionByTripId() {
+                    if (this.selectedTrip) {
+                        return [this.selectedTrip._id];
+                    }
+
+                    return [""];
+                }
             },
             trips() {
                 if (Trip.find()) console.log(Trip.find().count());
@@ -150,6 +198,9 @@
             },
             loginUser() {
                 return User.findOne(Meteor.userId());
+            },
+            transactionsItem() {
+                return TransactionItem.find();
             }
         },
         methods: {
@@ -168,6 +219,10 @@
                 this.hideArrivalPlacesModal();
                 this.showEditPrice = true;
                 this.price = this.selectedTrip.price[index];
+            },
+            showTicketsListModal(_id) {
+                this.showTicketsList = true;
+                this.selectedTrip = Trip.findOne(_id);
             },
             hideEditPriceModal() {
                 this.showEditPrice = false;

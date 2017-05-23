@@ -18,6 +18,15 @@ if (!Location.findOne()) {
     loc.save();
 }
 
+Location.extend({
+    meteorMethods: {
+        createOrUpdate(name) {
+            this.name = name;
+            return this.save();
+        },
+    }
+});
+
 Meteor.publishComposite('locations', function() {
     return {
         find: function() {

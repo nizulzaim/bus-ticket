@@ -44,7 +44,7 @@
                             <tbody>
                                 <tr v-for="t in trips">
                                     <td>{{t.departTime | moment("hh:mm A")}}</td>
-                                    <td class="td-number" v-text="t.seat"></td>
+                                    <td class="td-number" v-text="t.availableSeat"></td>
                                     <td class="td-action">
                                         <tooltip text="View">
                                             <router-link :to="{name: 'BookingDetails', params: {id: t._id}, query: {arrival: trip.arrivalLocation}}"><icon-button name="arrow-right" v-ripple trigger-tooltip class="color-green-900"></icon-button></router-link>
@@ -80,7 +80,7 @@
                     year: "",
                     day: "",
                 },
-                possibleDMonth: ["January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"],
+                possibleDMonth: ["January", "February", "March", "April","May", "June", "July", "August", "September", "October", "November", "December"],
                 possibleDYear: [2017, 2018],
                 possibleDDay: [],
                 departLocation: "",

@@ -14,6 +14,16 @@ export const TransactionItem = Class.create({
     helpers: {
         getStatus() {
             return Transaction.findOne(this.transactionId).status;
+        },
+        transaction() {
+            return Transaction.findOne(this.transactionId);
+        },
+        typeString() {
+            if (this.type === 0) {
+                return "Adult";
+            }
+
+            return "Children";
         }
     },
     behaviors: {

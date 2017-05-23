@@ -26,6 +26,11 @@
                     <icon name="account-circle"></icon> Manage Staff
                 </nav-list>
             </router-link>
+            <router-link to="/dashboard/locations" v-if="loginUser && loginUser.isAdmin()">
+                <nav-list class="nav-item">
+                    <icon name="map-marker"></icon> Manage Locations
+                </nav-list>
+            </router-link>
         </span>
         <divider></divider>
         <router-link to="/dashboard/my-account">

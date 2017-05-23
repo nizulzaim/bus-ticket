@@ -85,6 +85,7 @@
                     day: "",
                     hour: "",
                     minute: "",
+                    departDate: "",
                     price: [],
                 },
                 possibleDMonth: ["January", "February", "March", "April",'May', "June", "July", "August", "September", "October", "November", "December"],
@@ -135,7 +136,7 @@
                         hasError = true;
                     }
                 })
-
+                this.trip.departDate = new Date(this.trip.year, this.trip.month, parseInt(this.trip.day), parseInt(this.trip.hour), parseInt(this.trip.minute));
                 if (hasError) {
                     return this.$snackbar.run("Please enter value for each arrival/destination locations", () => {}, "OK", "error");
                 }
@@ -143,7 +144,9 @@
                     if (err) {
                         return this.$snackbar.run(err, () => {}, "OK", "error");
                     }
-                    this.$snackbar.run("Welcome to Nice Ticketing System", () => {});
+                    this.$snackbar.run("Successfully add new trip", () => {});
+
+                    return this.$router.replace("/dashboard/trips");
                 });
             }
         },

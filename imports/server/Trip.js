@@ -19,11 +19,10 @@ Trip.extend({
     },
     meteorMethods: {
         create(obj) {
-            let departDate = new Date(obj.year, obj.month, parseInt(obj.day), parseInt(obj.hour), parseInt(obj.minute));
             this.set({
                 departLocation: obj.departLocation,
                 price: obj.price,
-                departTime: departDate,
+                departTime: obj.departDate,
             });
             this.save();
         },
@@ -52,7 +51,7 @@ let getLocation = [
     },
 ];
 
-Meteor.publishComposite('trips', function(page = 1, count = 10, sortBy = 0) {
+Meteor.publishComposite('trips', function(page = 1, count = 100, sortBy = 0) {
     return {
         find: function() {
             let skip = (page - 1) * count;
@@ -88,8 +87,18 @@ Meteor.publishComposite('tripsByDateAndLocation', function(departLocation = "", 
             if (departTime !== "") {
                 endTime = addDays(departTime, 1);
             }
+            console.log(endTime)
+            console.log(Trip.findOne({departLocation, "price.arrivalLocation": arrivalLocation, 'departTime' : { $gte : departTime }}).departTime);
+            return Trip.find({departLocation, "price.arrivalLocation": arrivalLocation, 'departTime' : { $gte : departTime, $lte: endTime }});
+        },
+        children: getLocation,
+    };
+});
 
-            return Trip.find({$and:[{departLocation}, {"price.arrivalLocation": arrivalLocation}, { 'departTime' : { $gte : departTime, $lt: endTime }}]});
+Meteor.publishComposite('tripsByStaffCounter', function(departLocation = "") {
+    return {
+        find: function() {
+            return Trip.find({departLocation: departLocation});
         },
         children: getLocation,
     };

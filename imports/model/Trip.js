@@ -36,7 +36,13 @@ export const Trip = Class.create({
         locationArrival(_id){
             if (_id) {
                 let index = this.price.map(e => e.arrivalLocation).indexOf(_id);
-                return Location.findOne(this.price[index].arrivalLocation);
+                let loc = Location.findOne(this.price[index].arrivalLocation);
+
+                if (loc) {
+                    return loc;
+                }
+
+                return null;
             }
             return null;
         },

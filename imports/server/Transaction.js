@@ -1,6 +1,7 @@
 import { Transaction } from '/imports/model/Transaction';
 import { Trip } from '/imports/model/Trip';
 import { TransactionItem } from '/imports/model/TransactionItem';
+import { User } from '/imports/model/User';
 
 Transaction.extend({
     meteorMethods: {
@@ -42,6 +43,11 @@ Meteor.publishComposite('transactionByTripId', function(id) {
                     return TransactionItem.find({transactionId: transaction._id});
                 },
             },
+            {
+                find(transaction) {
+                    return User.find(transaction.owner);
+                },
+            },
         ]
     };
 });
@@ -50,6 +56,26 @@ Meteor.publishComposite('transactionsByUser', function(id) {
     return {
         find: function() {
             return Transaction.find({status: 3, owner: Meteor.userId()});
+        },
+        children: [
+            {
+                find(transaction) {
+                    return TransactionItem.find({transactionId: transaction._id});
+                },
+            },
+            {
+                find(transaction) {
+                    return Trip.find({_id: transaction.tripId});
+                },
+            },
+        ]
+    };
+});
+
+Meteor.publishComposite('transactions', function(id) {
+    return {
+        find: function() {
+            return Transaction.find();
         },
         children: [
             {

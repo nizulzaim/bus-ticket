@@ -4,6 +4,7 @@ import AddTrip from '/imports/client/views/public/dashboard/admin/AddTrip.vue';
 import Trips from '/imports/client/views/public/dashboard/admin/Trips.vue';
 import AddStaff from '/imports/client/views/public/dashboard/admin/AddStaff.vue';
 import Staffs from '/imports/client/views/public/dashboard/admin/Staffs.vue';
+import Locations from '/imports/client/views/public/dashboard/admin/Locations.vue';
 import Booking from '/imports/client/views/public/dashboard/customer/Booking.vue';
 import BookingDetails from '/imports/client/views/public/dashboard/customer/BookingDetails.vue';
 import MyAccount from '/imports/client/views/public/dashboard/MyAccount.vue';
@@ -88,6 +89,15 @@ export default [{
     meta: { fixToolbar: true, pageTitle: 'Active Tickets' },
     components: {
         default: ActiveTickets,
+        toolbar: Toolbar,
+        navigation: Navigation,
+    }
+},{
+    path: `${routesParent}/locations`,
+    name: 'Locations',
+    meta: { fixToolbar: true, pageTitle: 'Locations' },
+    components: {
+        default: Locations,
         toolbar: Toolbar,
         navigation: Navigation,
     }
