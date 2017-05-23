@@ -53,8 +53,8 @@
                         <div class="no-margin font-subhead font-light"><span class="font-normal">No. of Tickets:</span> {{selectedTransaction.transactionItems().count()}}</div>
                         <div class="font-subhead no-margin font-light"><span class="font-normal">Departure Date:</span> {{selectedTransaction.trip().departTime | moment("DD MMMM YYYY")}}</div>
                         <div class="font-subhead no-margin font-light"><span class="font-normal">Departure Time:</span> {{selectedTransaction.trip().departTime | moment("hh:mm A")}}</div>
-                        <div class="font-subhead no-margin font-light"><span class="font-normal">Total Paid:</span> MYR {{selectedTransaction.totalPrice.toFixed(2)</div>
-                        <div class="font-subhead no-margin font-light"><span class="font-normal">Status:</span> {{selectedTransaction.statusString()}}}}</div>
+                        <div class="font-subhead no-margin font-light"><span class="font-normal">Total Paid:</span> RM {{selectedTransaction.totalPrice.toFixed(2)}}</div>
+                        <div class="font-subhead no-margin font-light"><span class="font-normal">Status:</span> {{selectedTransaction.statusString()}}</div>
                     </cards-content>
                     <divider></divider>
                     <cards-content-scrollbar v-if="selectedTransaction && selectedTransactionItems.count()">
