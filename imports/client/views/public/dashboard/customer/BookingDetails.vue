@@ -56,11 +56,6 @@
                                 </list-item>
                                 <list-item>
                                     <span slot="left">
-                                        <icon name="solid" class="color-red-600"></icon>
-                                    </span> Locked
-                                </list-item>
-                                <list-item>
-                                    <span slot="left">
                                         <icon name="solid" class="color-grey"></icon>
                                     </span> Sold
                                 </list-item>
