@@ -10,7 +10,7 @@
                         <cards-content>
                             <div class="row has-gutter">
                                 <div class="col-md-fluid-12" style="border-right: 1px solid #eee">
-                                    <textfield placeholder="Username" v-model="user.username"></textfield>
+                                    <textfield placeholder="Username" v-model="user.username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textfield>
                                     <textfield type="password" placeholder="Password" v-model="user.password"></textfield>
                                     <textfield type="password" placeholder="Confirm Password" v-model="user.cpassword"></textfield>
                                     <textfield placeholder="Full Name" v-model="user.name"></textfield>
